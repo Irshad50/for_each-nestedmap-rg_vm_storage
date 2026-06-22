@@ -102,7 +102,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
   network_interface_ids = [azurerm_network_interface.nic[each.value.nic_key].id]
 
-  admin_password = "******"
+  admin_password = "Aqsa@9150"
 
   disable_password_authentication = false
 
