@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
 steps:
 
@@ -14,22 +14,25 @@ steps:
     terraform version
   displayName: "Install Terraform"
 
-# Terraform Init
-- script: |
-    terraform init
-  displayName: "Terraform Init"
+# 🔥 IMPORTANT: Inject Azure credentials into Terraform
+- task: AzureCLI@2
+  displayName: "Terraform Plan & Apply"
+  inputs:
+    azureSubscription: "azure-sp-conn"
+    scriptType: bash
+    scriptLocation: inlineScript
+    addSpnToEnvironment: true
+    inlineScript: |
+      set -e
 
-# Terraform Validate
-- script: |
-    terraform validate
-  displayName: "Terraform Validate"
+      echo "Setting ARM variables for Terraform"
 
-# Terraform Plan (IMPORTANT FIX)
-- script: |
-    terraform plan
-  displayName: "Terraform Plan"
+      export ARM_CLIENT_ID=$servicePrincipalId
+      export ARM_CLIENT_SECRET=$servicePrincipalKey
+      export ARM_TENANT_ID=$tenantId
+      export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 
-# Terraform Apply
-- script: |
-    terraform apply -auto-approve
-  displayName: "Terraform Apply"
+      terraform init
+      terraform validate
+      terraform plan
+      terraform apply -auto-approve
