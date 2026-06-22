@@ -6,20 +6,15 @@ pool:
 
 steps:
 
-# =======================
-# INSTALL TERRAFORM
-# =======================
+# Install Terraform
 - script: |
-    set -e
     wget https://releases.hashicorp.com/terraform/1.12.2/terraform_1.12.2_linux_amd64.zip
     unzip terraform_1.12.2_linux_amd64.zip
     sudo mv terraform /usr/local/bin/
     terraform version
   displayName: "Install Terraform"
 
-# =======================
-# AZURE LOGIN
-# =======================
+# Azure Login (IMPORTANT FIX)
 - task: AzureCLI@2
   displayName: "Azure Login"
   inputs:
@@ -30,33 +25,25 @@ steps:
       set -e
       az account show
 
-# =======================
-# TERRAFORM INIT
-# =======================
+# Terraform Init
 - script: |
     set -e
     terraform init
   displayName: "Terraform Init"
 
-# =======================
-# VALIDATE
-# =======================
+# Terraform Validate
 - script: |
     set -e
     terraform validate
   displayName: "Terraform Validate"
 
-# =======================
-# PLAN (IMPORTANT DEBUG STEP)
-# =======================
+# Terraform Plan
 - script: |
     set -e
     terraform plan
   displayName: "Terraform Plan"
 
-# =======================
-# APPLY
-# =======================
+# Terraform Apply
 - script: |
     set -e
     terraform apply -auto-approve
