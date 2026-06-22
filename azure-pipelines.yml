@@ -1,0 +1,63 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+# =======================
+# INSTALL TERRAFORM
+# =======================
+- script: |
+    set -e
+    wget https://releases.hashicorp.com/terraform/1.12.2/terraform_1.12.2_linux_amd64.zip
+    unzip terraform_1.12.2_linux_amd64.zip
+    sudo mv terraform /usr/local/bin/
+    terraform version
+  displayName: "Install Terraform"
+
+# =======================
+# AZURE LOGIN
+# =======================
+- task: AzureCLI@2
+  displayName: "Azure Login"
+  inputs:
+    azureSubscription: "azure-sp-conn"
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      set -e
+      az account show
+
+# =======================
+# TERRAFORM INIT
+# =======================
+- script: |
+    set -e
+    terraform init
+  displayName: "Terraform Init"
+
+# =======================
+# VALIDATE
+# =======================
+- script: |
+    set -e
+    terraform validate
+  displayName: "Terraform Validate"
+
+# =======================
+# PLAN (IMPORTANT DEBUG STEP)
+# =======================
+- script: |
+    set -e
+    terraform plan
+  displayName: "Terraform Plan"
+
+# =======================
+# APPLY
+# =======================
+- script: |
+    set -e
+    terraform apply -auto-approve
+  displayName: "Terraform Apply"
