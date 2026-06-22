@@ -14,42 +14,22 @@ steps:
     terraform version
   displayName: "Install Terraform"
 
-# IMPORTANT FIX (LOGIN FIX)
-- task: AzureCLI@2
-  displayName: "Azure Login"
-  inputs:
-    azureSubscription: "azure-sp-conn"
-    scriptType: bash
-    scriptLocation: inlineScript
-    inlineScript: |
-      set -e
-      az account show
-
 # Terraform Init
 - script: |
-    set -e
     terraform init
   displayName: "Terraform Init"
 
 # Terraform Validate
 - script: |
-    set -e
     terraform validate
   displayName: "Terraform Validate"
 
-# Terraform Plan (IMPORTANT FIX HERE)
-- task: AzureCLI@2
+# Terraform Plan (IMPORTANT FIX)
+- script: |
+    terraform plan
   displayName: "Terraform Plan"
-  inputs:
-    azureSubscription: "azure-sp-conn"
-    scriptType: bash
-    scriptLocation: inlineScript
-    inlineScript: |
-      set -e
-      terraform plan
 
 # Terraform Apply
 - script: |
-    set -e
     terraform apply -auto-approve
   displayName: "Terraform Apply"
